@@ -14,6 +14,10 @@ repositories {
 		name "Fabric"
 		url 'https://maven.fabricmc.net/'
 	}
+	maven {
+		name "Quilt"
+		url 'https://maven.quiltmc.org/repository/release/'
+	}
 }
 
 archivesBaseName = 'matcher'
@@ -62,9 +66,9 @@ javafx {
 dependencies {
 	implementation "com.github.javaparser:javaparser-core:${javaparser_version}"
 	implementation "net.fabricmc:cfr:${fabric_cfr_version}"
-	implementation "net.fabricmc:fabric-fernflower:${fabric_fernflower_version}"
 	implementation "net.fabricmc:mapping-io:${mappingio_version}"
 	implementation "org.bitbucket.mstrobel:procyon-compilertools:${procyon_version}"
+	implementation "org.quiltmc:quiltflower:${quiltflower_version}"
 	implementation "org.ow2.asm:asm:${asm_version}"
 	implementation "org.ow2.asm:asm-commons:${asm_version}"
 	implementation "org.ow2.asm:asm-tree:${asm_version}"
@@ -92,7 +96,7 @@ extraJavaModuleInfo {
 	automaticModule("cfr-${fabric_cfr_version}.jar", "cfr")
 	automaticModule("procyon-core-${procyon_version}.jar", "procyon.core")
 	automaticModule("procyon-compilertools-${procyon_version}.jar", "procyon.compilertools")
-	automaticModule("fabric-fernflower-${fabric_fernflower_version}.jar", "intellij.fernflower")
+	automaticModule("quiltflower-${quiltflower_version}.jar", "org.quiltmc.quiltflower")
 	automaticModule("mapping-io-${mappingio_version}.jar", "net.fabricmc.mappingio")
 }
 
