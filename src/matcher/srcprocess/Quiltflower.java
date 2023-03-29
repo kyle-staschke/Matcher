@@ -26,7 +26,11 @@ public class Quiltflower implements Decompiler {
 	public String decompile(ClassInstance cls, ClassFeatureExtractor env, NameType nameType) {
 		// invoke Qf with on-demand class lookup into matcher's state and string based output
 		Map<String, Object> properties = new HashMap<>(IFernflowerPreferences.DEFAULTS);
-		properties.put(IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES, "1");
+		properties.put(IFernflowerPreferences.REMOVE_BRIDGE, "0");
+		properties.put(IFernflowerPreferences.REMOVE_SYNTHETIC, "0");
+		properties.put(IFernflowerPreferences.INDENT_STRING, "\n");
+		properties.put(IFernflowerPreferences.THREADS, String.valueOf(Math.max(1, Runtime.getRuntime().availableProcessors() - 2)));
+		properties.put(IFernflowerPreferences.LOG_LEVEL, "WARN");
 
 		try (ResultSaver resultSaver = new ResultSaver()) {
 			BaseDecompiler decompiler = new BaseDecompiler(resultSaver, properties, new PrintStreamLogger(System.out));
