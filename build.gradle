@@ -3,9 +3,9 @@ plugins {
 	id 'application'
 	id 'maven-publish'
 	id "checkstyle"
-	id 'org.openjfx.javafxplugin' version '0.0.13'
-	id 'com.github.johnrengelman.shadow' version '7.1.2'
-	id 'de.jjohannes.extra-java-module-info' version '0.16'
+	id 'org.openjfx.javafxplugin'
+	id 'com.github.johnrengelman.shadow'
+	id 'org.gradlex.extra-java-module-info'
 }
 
 repositories {
@@ -18,6 +18,7 @@ repositories {
 		name "Quilt"
 		url 'https://maven.quiltmc.org/repository/release/'
 	}
+	google()
 }
 
 archivesBaseName = 'matcher'
@@ -69,6 +70,8 @@ dependencies {
 	implementation "net.fabricmc:mapping-io:${mappingio_version}"
 	implementation "org.bitbucket.mstrobel:procyon-compilertools:${procyon_version}"
 	implementation "org.quiltmc:quiltflower:${quiltflower_version}"
+	implementation "io.github.skylot:jadx-core:${jadx_version}"
+	implementation "io.github.skylot:jadx-java-input:${jadx_version}"
 	implementation "org.ow2.asm:asm:${asm_version}"
 	implementation "org.ow2.asm:asm-commons:${asm_version}"
 	implementation "org.ow2.asm:asm-tree:${asm_version}"
@@ -98,6 +101,23 @@ extraJavaModuleInfo {
 	automaticModule("procyon-compilertools-${procyon_version}.jar", "procyon.compilertools")
 	automaticModule("quiltflower-${quiltflower_version}.jar", "org.quiltmc.quiltflower")
 	automaticModule("mapping-io-${mappingio_version}.jar", "net.fabricmc.mappingio")
+	failOnMissingModuleInfo.set(false) // because there are transitive dependencies that are not covered yet
+
+	// Mappping IO
+	automaticModule("net.fabricmc:mapping-io", "net.fabricmc.mappingio")
+
+	// CFR
+	automaticModule("net.fabricmc:cfr", "cfr")
+
+	// Fernflower
+	automaticModule("org.quiltmc:quiltflower", "org.quiltmc.quiltflower")
+
+	// Procyon
+	automaticModule("org.bitbucket.mstrobel:procyon-compilertools", "procyon.compilertools")
+
+	// JADX
+	automaticModule("io.github.skylot:jadx-core", "jadx.core")
+	automaticModule("io.github.skylot:jadx-java-input", "jadx.java_input")
 }
 
 application {
