@@ -49,10 +49,6 @@ public class Jadx implements Decompiler {
 							.replace('$', '.');
 
 					if (jadxFullClassName.equals(fullClassName)) {
-						if (jadxCls.isInner()) {
-							break;
-						}
-
 						return jadxCls.getCode();
 					}
 				}
