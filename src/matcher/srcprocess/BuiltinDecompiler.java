@@ -6,6 +6,7 @@ public enum BuiltinDecompiler {
 	CFR("CFR", Cfr::new),
 	FERNFLOWER("Fernflower", Fernflower::new),
 	PROCYON("Procyon", Procyon::new),
+	JADX("JADX", Jadx::new),
 	NOP("no-op", NoOp::new);
 
 	BuiltinDecompiler(String name, Supplier<? extends Decompiler> supplier) {
