@@ -63,7 +63,7 @@ public class FileMenu extends Menu {
 		getItems().add(menuItem);
 		menuItem.setOnAction(event -> loadMappings(null));
 
-		menuItem = new MenuItem("Load mappings (Enigma)");
+		/*menuItem = new MenuItem("Load mappings (Enigma)");
 		getItems().add(menuItem);
 		menuItem.setOnAction(event -> loadMappings(MappingFormat.ENIGMA));
 
@@ -86,7 +86,7 @@ public class FileMenu extends Menu {
 			gui.onMappingChange();
 		});
 
-		getItems().add(new SeparatorMenuItem());
+		getItems().add(new SeparatorMenuItem());*/
 
 		menuItem = new MenuItem("Load matches");
 		getItems().add(menuItem);

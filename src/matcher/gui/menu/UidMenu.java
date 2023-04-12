@@ -37,8 +37,6 @@ public class UidMenu extends Menu {
 		super("UID");
 
 		this.gui = gui;
-
-		init();
 	}
 
 	private void init() {

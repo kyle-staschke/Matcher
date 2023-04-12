@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -819,8 +820,16 @@ public final class ClassInstance implements ParentEntry, Matchable<ClassInstance
 		return fields[pos];
 	}
 
+	public MethodInstance[] getAllMethods() {
+		return this.methods;
+	}
+
 	public MethodInstance[] getMethods() {
-		return methods;
+		return Arrays.stream(this.methods).filter(m -> !m.isStatic()).toList().toArray(new MethodInstance[0]);
+	}
+
+	public MethodInstance[] getStaticMethods() {
+		return Arrays.stream(this.methods).filter(MemberInstance::isStatic).toList().toArray(new MethodInstance[0]);
 	}
 
 	public FieldInstance[] getFields() {

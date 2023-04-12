@@ -362,6 +362,24 @@ public class MatchPaneSrc extends SplitPane implements IFwdGuiComponent, ISelect
 			}
 
 			items.sort(getMemberComparator());
+		} else {
+			for (MethodInstance mth : gui.getEnv().getStaticMethods()) {
+				if (!mth.isReal() || (gui.isHideUnmappedA() && !mth.hasNonInheritedMappedName() && !mth.hasMappedChildren())) {
+					continue;
+				}
+
+				items.add(mth);
+			}
+
+			for (FieldInstance fld : cls.getFields()) {
+				if (!fld.isReal() || (gui.isHideUnmappedA() && !fld.hasMappedName())) {
+					continue;
+				}
+
+				items.add(fld);
+			}
+
+			items.sort(getMemberComparator());
 		}
 
 		IFwdGuiComponent.super.onClassSelect(cls);

@@ -26,6 +26,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.DoubleConsumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
@@ -270,11 +272,7 @@ public final class ClassEnvironment implements ClassEnv {
 
 	@Override
 	public Collection<MethodInstance> getStaticMethods() {
-		ArrayList<MethodInstance> list = new ArrayList<>();
-		for(ClassInstance cls : getClasses()) {
-			Arrays.stream(cls.getMethods()).filter(m -> m.isStatic).forEach(list::add);
-		}
-		return list;
+		return this.getClassesA().stream().flatMap(cls -> Stream.of(cls.getStaticMethods())).toList();
 	}
 
 	public List<ClassInstance> getDisplayClassesA(boolean inputsOnly, boolean mappedOnly) {
