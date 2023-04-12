@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -265,6 +266,15 @@ public final class ClassEnvironment implements ClassEnv {
 
 	public Collection<ClassInstance> getClassesB() {
 		return extractorB.getClasses();
+	}
+
+	@Override
+	public Collection<MethodInstance> getStaticMethods() {
+		ArrayList<MethodInstance> list = new ArrayList<>();
+		for(ClassInstance cls : getClasses()) {
+			Arrays.stream(cls.getMethods()).filter(m -> m.isStatic).forEach(list::add);
+		}
+		return list;
 	}
 
 	public List<ClassInstance> getDisplayClassesA(boolean inputsOnly, boolean mappedOnly) {

@@ -33,6 +33,7 @@ import matcher.classifier.IRanker;
 import matcher.classifier.MethodClassifier;
 import matcher.classifier.MethodVarClassifier;
 import matcher.classifier.RankResult;
+import matcher.classifier.StaticMethodClassifier;
 import matcher.config.Config;
 import matcher.config.ProjectConfig;
 import matcher.type.ClassEnv;
@@ -50,6 +51,7 @@ public class Matcher {
 		MethodClassifier.init();
 		FieldClassifier.init();
 		MethodVarClassifier.init();
+		StaticMethodClassifier.init();
 	}
 
 	public Matcher(ClassEnvironment env) {
@@ -297,51 +299,70 @@ public class Matcher {
 	public void match(MethodInstance a, MethodInstance b) {
 		if (a == null) throw new NullPointerException("null method A");
 		if (b == null) throw new NullPointerException("null method B");
-		if (a.getCls().getMatch() != b.getCls()) throw new IllegalArgumentException("the methods don't belong to the same class");
+		if(!a.isStatic() && !b.isStatic()) {
+			if (a.getCls().getMatch() != b.getCls()) throw new IllegalArgumentException("the methods don't belong to the same class");
+		}
 		if (a.getMatch() == b) return;
 
 		System.out.println("match method "+a+" -> "+b+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
 
-		Set<MethodInstance> membersA = a.getAllHierarchyMembers();
-		Set<MethodInstance> membersB = b.getAllHierarchyMembers();
-		assert membersA.contains(a);
-		assert membersB.contains(b);
+		if(!a.isStatic() && !b.isStatic()) {
+			Set<MethodInstance> membersA = a.getAllHierarchyMembers();
+			Set<MethodInstance> membersB = b.getAllHierarchyMembers();
+			assert membersA.contains(a);
+			assert membersB.contains(b);
 
-		if (!a.hasMatchedHierarchy(b)) {
-			if (a.hasHierarchyMatch()) {
-				for (MethodInstance m : membersA) {
-					if (m.hasMatch()) {
-						unmatchArgsVars(m);
-						m.getMatch().setMatch(null);
-						m.setMatch(null);
+			if (!a.hasMatchedHierarchy(b)) {
+				if (a.hasHierarchyMatch()) {
+					for (MethodInstance m : membersA) {
+						if (m.hasMatch()) {
+							unmatchArgsVars(m);
+							m.getMatch().setMatch(null);
+							m.setMatch(null);
+						}
 					}
 				}
-			}
 
-			if (b.hasHierarchyMatch()) {
-				for (MethodInstance m : membersB) {
-					if (m.hasMatch()) {
-						unmatchArgsVars(m);
-						m.getMatch().setMatch(null);
-						m.setMatch(null);
+				if (b.hasHierarchyMatch()) {
+					for (MethodInstance m : membersB) {
+						if (m.hasMatch()) {
+							unmatchArgsVars(m);
+							m.getMatch().setMatch(null);
+							m.setMatch(null);
+						}
 					}
 				}
-			}
 
-			ClassEnv reqEnv = a.getCls().getEnv();
+				ClassEnv reqEnv = a.getCls().getEnv();
 
-			for (MethodInstance ca : membersA) {
-				ClassInstance cls = ca.getCls();
-				if (!cls.hasMatch() || cls.getEnv() != reqEnv) continue;
+				for (MethodInstance ca : membersA) {
+					ClassInstance cls = ca.getCls();
+					if (!cls.hasMatch() || cls.getEnv() != reqEnv) continue;
 
-				for (MethodInstance cb : cls.getMatch().getMethods()) {
-					if (membersB.contains(cb)) {
-						assert !ca.hasMatch() && !cb.hasMatch();
-						ca.setMatch(cb);
-						cb.setMatch(ca);
-						break;
+					for (MethodInstance cb : cls.getMatch().getMethods()) {
+						if (membersB.contains(cb)) {
+							assert !ca.hasMatch() && !cb.hasMatch();
+							ca.setMatch(cb);
+							cb.setMatch(ca);
+							break;
+						}
 					}
 				}
+			} else {
+				if (a.getMatch() != null) {
+					unmatchArgsVars(a);
+					a.getMatch().setMatch(null);
+					a.setMatch(null);
+				}
+
+				if (b.getMatch() != null) {
+					unmatchArgsVars(b);
+					b.getMatch().setMatch(null);
+					b.setMatch(null);
+				}
+
+				a.setMatch(b);
+				b.setMatch(a);
 			}
 		} else {
 			if (a.getMatch() != null) {

@@ -5,6 +5,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -209,6 +210,15 @@ public class ClassFeatureExtractor implements LocalClassEnv {
 	@Override
 	public Collection<ClassInstance> getClasses() {
 		return roClasses.values();
+	}
+
+	@Override
+	public Collection<MethodInstance> getStaticMethods() {
+		ArrayList<MethodInstance> list = new ArrayList<>();
+		for(ClassInstance cls : getClasses()) {
+			Arrays.stream(cls.getMethods()).filter(m -> m.isStatic).forEach(list::add);
+		}
+		return list;
 	}
 
 	public Collection<InputFile> getInputFiles() {

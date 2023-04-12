@@ -154,16 +154,20 @@ public class BottomPane extends StackPane implements IGuiComponent {
 		ClassInstance clsA = srcPane.getSelectedClass();
 		ClassInstance clsB = dstPane.getSelectedClass();
 
-		if (canMatchClasses(clsA, clsB)) {
-			gui.getMatcher().match(clsA, clsB);
-			gui.onMatchChange(EnumSet.allOf(MatchType.class));
-			return;
-		}
 
 		MemberInstance<?> memberA = srcPane.getSelectedMethod();
 		if (memberA == null) memberA = srcPane.getSelectedField();
+
 		MemberInstance<?> memberB = dstPane.getSelectedMethod();
 		if (memberB == null) memberB = dstPane.getSelectedField();
+
+		if(memberA == null || !memberA.isStatic()) {
+			if (canMatchClasses(clsA, clsB)) {
+				gui.getMatcher().match(clsA, clsB);
+				gui.onMatchChange(EnumSet.of(MatchType.Class, MatchType.Method, MatchType.Field, MatchType.MethodVar));
+				return;
+			}
+		}
 
 		if (canMatchMembers(memberA, memberB)) {
 			if (memberA instanceof MethodInstance) {

@@ -87,27 +87,31 @@ public class ClassifierUtil {
 		if (a.getMatch() != null) return a.getMatch() == b;
 		if (b.getMatch() != null) return b.getMatch() == a;
 		if (!a.isMatchable() || !b.isMatchable()) return false;
-		if (!checkPotentialEquality(a.getCls(), b.getCls())) return false;
+		if(!a.isStatic() && !b.isStatic()) {
+			if (!checkPotentialEquality(a.getCls(), b.getCls())) return false;
+		}
 		if (!checkNameObfMatch(a, b)) return false;
 		if ((a.getId().startsWith("<") || b.getId().startsWith("<")) && !a.getName().equals(b.getName())) return false; // require <clinit> and <init> to match
 
 		//MethodInstance hierarchyMatch = a.getHierarchyMatch();
 		//if (hierarchyMatch != null && !hierarchyMatch.getAllHierarchyMembers().contains(b)) return false;
-		if ((a.hasHierarchyMatch() || b.hasHierarchyMatch()) && !a.hasMatchedHierarchy(b)) return false;
+		if(!a.isStatic() && !b.isStatic()) {
+			if ((a.hasHierarchyMatch() || b.hasHierarchyMatch()) && !a.hasMatchedHierarchy(b)) return false;
 
-		if (a.getType() == MethodType.LAMBDA_IMPL && b.getType() == MethodType.LAMBDA_IMPL) { // require same "outer method" for lambdas
-			boolean found = false;
+			if (a.getType() == MethodType.LAMBDA_IMPL && b.getType() == MethodType.LAMBDA_IMPL) { // require same "outer method" for lambdas
+				boolean found = false;
 
-			maLoop: for (MethodInstance ma : a.getRefsIn()) {
-				for (MethodInstance mb : b.getRefsIn()) {
-					if (checkPotentialEquality(ma, mb)) {
-						found = true;
-						break maLoop;
+				maLoop: for (MethodInstance ma : a.getRefsIn()) {
+					for (MethodInstance mb : b.getRefsIn()) {
+						if (checkPotentialEquality(ma, mb)) {
+							found = true;
+							break maLoop;
+						}
 					}
 				}
-			}
 
-			if (!found) return false;
+				if (!found) return false;
+			}
 		}
 
 		return true;

@@ -1,5 +1,6 @@
 package matcher.gui.menu;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import javafx.scene.control.ButtonType;
@@ -32,6 +33,10 @@ public class MappingMenu extends Menu {
 		menuItem = new MenuItem("Fix record member names");
 		getItems().add(menuItem);
 		menuItem.setOnAction(event -> fixRecordMemberNames());
+
+		menuItem = new MenuItem("Initialize Mappings");
+		getItems().add(menuItem);
+		menuItem.setOnAction(event -> initMappings());
 	}
 
 	private void fixRecordMemberNames() {
@@ -53,6 +58,21 @@ public class MappingMenu extends Menu {
 		if (MappingPropagator.fixRecordMemberNames(gui.getEnv(), settings.ns, settings.linkNs)) {
 			gui.onMappingChange();
 		}
+	}
+
+	private void initMappings() {
+		gui.getEnv().getClasses().stream().forEach(cls -> {
+			cls.setMappedName(cls.getName());
+			Arrays.stream(cls.getMethods()).toList().forEach(method -> {
+				method.setMappedName(method.getName());
+				Arrays.stream(method.getArgs()).toList().forEach(arg -> {
+					arg.setMappedName(arg.getName());
+				});
+			});
+			Arrays.stream(cls.getFields()).toList().forEach(field -> {
+				field.setMappedName(field.getName());
+			});
+		});
 	}
 
 	private final Gui gui;

@@ -25,6 +25,7 @@ import matcher.classifier.FieldClassifier;
 import matcher.classifier.MethodClassifier;
 import matcher.classifier.MethodVarClassifier;
 import matcher.classifier.RankResult;
+import matcher.classifier.StaticMethodClassifier;
 import matcher.type.ClassEnv;
 import matcher.type.ClassEnvironment;
 import matcher.type.ClassInstance;
@@ -688,10 +689,10 @@ public class MatchPaneDst extends SplitPane implements IFwdGuiComponent, ISelect
 			// refresh list selection only early if it wasn't empty and the src class selection changed to suppress class selection changes
 			// from (temporarily) clearing matchList and reentering onSelect while async ranking is ongoing
 
-			if (oldDstSelection != null && (newSrcSelection == null || oldSrcSelection == null || MatchPaneDst.getClass(newSrcSelection) != MatchPaneDst.getClass(oldSrcSelection))) {
+			/*if (oldDstSelection != null && (newSrcSelection == null || oldSrcSelection == null || MatchPaneDst.getClass(newSrcSelection) != MatchPaneDst.getClass(oldSrcSelection))) {
 				announceSelectionChange(oldDstSelection, null);
 				oldDstSelection = null;
-			}
+			}*/
 
 			oldSrcSelection = newSrcSelection;
 
@@ -713,7 +714,11 @@ public class MatchPaneDst extends SplitPane implements IFwdGuiComponent, ISelect
 				ranker = () -> ClassClassifier.rankParallel(cls, cmpClasses.toArray(new ClassInstance[0]), matchLevel, env, maxMismatch);
 			} else if (newSrcSelection instanceof MethodInstance) { // unmatched method or no method var selected
 				MethodInstance method = (MethodInstance) newSrcSelection;
-				ranker = () -> MethodClassifier.rank(method, method.getCls().getMatch().getMethods(), matchLevel, env, maxMismatch);
+				if(((MethodInstance) newSrcSelection).isStatic()) {
+					ranker = () -> StaticMethodClassifier.rank(method, method.getEnv().getOther().getStaticMethods().toArray(new MethodInstance[0]), matchLevel, env, maxMismatch);
+				} else {
+					ranker = () -> MethodClassifier.rank(method, method.getCls().getMatch().getMethods(), matchLevel, env, maxMismatch);
+				}
 			} else if (newSrcSelection instanceof FieldInstance) { // field
 				FieldInstance field = (FieldInstance) newSrcSelection;
 				ranker = () -> FieldClassifier.rank(field, field.getCls().getMatch().getFields(), matchLevel, env, maxMismatch);
@@ -755,6 +760,10 @@ public class MatchPaneDst extends SplitPane implements IFwdGuiComponent, ISelect
 				if (ret == null) {
 					ret = srcPane.getSelectedClass();
 				}
+			}
+
+			if(ret instanceof MethodInstance && ((MethodInstance)ret).isStatic()) {
+				return ret;
 			}
 
 			if (ret != null) {

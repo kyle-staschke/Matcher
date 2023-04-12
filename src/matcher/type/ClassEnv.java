@@ -9,6 +9,8 @@ public interface ClassEnv {
 
 	Collection<ClassInstance> getClasses();
 
+	Collection<MethodInstance> getStaticMethods();
+
 	default ClassInstance getClsByName(String name) {
 		return getClsById(ClassInstance.getId(name));
 	}
